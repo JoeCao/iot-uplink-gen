@@ -1,0 +1,178 @@
+{
+  "version": "1.0",
+  "properties": [
+    {
+      "identifier": "temperature",
+      "name": "温度",
+      "accessMode": "r",
+      "required": true,
+      "dataType": {
+        "type": "float",
+        "specs": {
+          "min": -40.0,
+          "max": 85.0,
+          "step": 0.1,
+          "unit": "°C",
+          "unitName": "摄氏度"
+        }
+      }
+    },
+    {
+      "identifier": "humidity",
+      "name": "湿度",
+      "accessMode": "r",
+      "required": true,
+      "dataType": {
+        "type": "float",
+        "specs": {
+          "min": 0.0,
+          "max": 100.0,
+          "step": 0.1,
+          "unit": "%",
+          "unitName": "百分比"
+        }
+      }
+    },
+    {
+      "identifier": "pressure",
+      "name": "气压",
+      "accessMode": "r",
+      "required": false,
+      "dataType": {
+        "type": "float",
+        "specs": {
+          "min": 300.0,
+          "max": 1100.0,
+          "step": 0.1,
+          "unit": "hPa",
+          "unitName": "百帕"
+        }
+      }
+    },
+    {
+      "identifier": "battery",
+      "name": "电池电量",
+      "accessMode": "r",
+      "required": true,
+      "dataType": {
+        "type": "int",
+        "specs": {
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "unitName": "百分比"
+        }
+      }
+    },
+    {
+      "identifier": "status",
+      "name": "设备状态",
+      "accessMode": "rw",
+      "required": true,
+      "dataType": {
+        "type": "enum",
+        "specs": {
+          "enumValue": "online,offline,maintenance"
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "identifier": "temperature_alarm",
+      "name": "温度告警",
+      "type": "alert",
+      "required": false,
+      "desc": "温度超出正常范围时触发",
+      "eventType": "EVENT_TYPE_ALERT",
+      "outputData": [
+        {
+          "identifier": "temperature",
+          "name": "当前温度",
+          "dataType": {
+            "type": "float",
+            "specs": {
+              "min": -40.0,
+              "max": 85.0,
+              "unit": "°C"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identifier": "low_battery",
+      "name": "低电量告警",
+      "type": "alert",
+      "required": false,
+      "desc": "电池电量低于20%时触发",
+      "eventType": "EVENT_TYPE_ALERT",
+      "outputData": [
+        {
+          "identifier": "battery",
+          "name": "当前电量",
+          "dataType": {
+            "type": "int",
+            "specs": {
+              "min": 0,
+              "max": 100,
+              "unit": "%"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "identifier": "calibrate",
+      "name": "校准传感器",
+      "required": false,
+      "callType": "sync",
+      "desc": "校准传感器精度",
+      "method": "calibrate",
+      "inputData": [
+        {
+          "identifier": "sensor_type",
+          "name": "传感器类型",
+          "dataType": {
+            "type": "enum",
+            "specs": {
+              "enumValue": "temperature,humidity,pressure"
+            }
+          }
+        }
+      ],
+      "outputData": [
+        {
+          "identifier": "result",
+          "name": "校准结果",
+          "dataType": {
+            "type": "bool",
+            "specs": {}
+          }
+        }
+      ]
+    },
+    {
+      "identifier": "reset",
+      "name": "重置设备",
+      "required": false,
+      "callType": "sync",
+      "desc": "重置设备到初始状态",
+      "method": "reset",
+      "inputData": [],
+      "outputData": [
+        {
+          "identifier": "success",
+          "name": "重置成功",
+          "dataType": {
+            "type": "bool",
+            "specs": {}
+          }
+        }
+      ]
+    }
+  ]
+}
