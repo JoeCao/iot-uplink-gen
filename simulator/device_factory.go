@@ -162,11 +162,12 @@ func (df *DeviceFactory) generateDefaultPropertyConfig(prop tsl.Property) Proper
 		Method: "randomRange", // 默认使用随机范围
 	}
 
-	switch prop.DataType.Type {
+	dataType := prop.GetDataType()
+	switch dataType.Type {
 	case "float", "double":
-		if prop.DataType.Specs.Min != 0 || prop.DataType.Specs.Max != 0 {
-			config.Min = json.Number(fmt.Sprintf("%v", prop.DataType.Specs.Min))
-			config.Max = json.Number(fmt.Sprintf("%v", prop.DataType.Specs.Max))
+		if dataType.Specs.Min != 0 || dataType.Specs.Max != 0 {
+			config.Min = json.Number(fmt.Sprintf("%v", dataType.Specs.Min))
+			config.Max = json.Number(fmt.Sprintf("%v", dataType.Specs.Max))
 		} else {
 			config.Min = json.Number("0.0")
 			config.Max = json.Number("100.0")
@@ -174,9 +175,9 @@ func (df *DeviceFactory) generateDefaultPropertyConfig(prop tsl.Property) Proper
 		config.Step = json.Number("0.1")
 
 	case "int", "long":
-		if prop.DataType.Specs.Min != 0 || prop.DataType.Specs.Max != 0 {
-			config.Min = json.Number(fmt.Sprintf("%v", int64(prop.DataType.Specs.Min)))
-			config.Max = json.Number(fmt.Sprintf("%v", int64(prop.DataType.Specs.Max)))
+		if dataType.Specs.Min != 0 || dataType.Specs.Max != 0 {
+			config.Min = json.Number(fmt.Sprintf("%v", int64(dataType.Specs.Min)))
+			config.Max = json.Number(fmt.Sprintf("%v", int64(dataType.Specs.Max)))
 		} else {
 			config.Min = json.Number("0")
 			config.Max = json.Number("100")
@@ -195,10 +196,10 @@ func (df *DeviceFactory) generateDefaultPropertyConfig(prop tsl.Property) Proper
 
 	case "enum":
 		config.Method = "enum"
-		if prop.DataType.Specs.EnumValue != "" {
+		if dataType.Specs.Enum != "" {
 			// 解析枚举值
 			// 这里需要根据实际的枚举值格式进行解析
-			config.EnumValues = []string{prop.DataType.Specs.EnumValue}
+			config.EnumValues = []string{dataType.Specs.Enum}
 		} else {
 			config.EnumValues = []string{"enum1", "enum2", "enum3"}
 		}

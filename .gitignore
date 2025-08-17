@@ -56,6 +56,7 @@ configs/*.json
 # Project specific executables
 iot-simulator
 mydevice
+iot-uplink-gen
 
 # Runtime data
 pids

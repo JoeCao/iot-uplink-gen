@@ -3,12 +3,14 @@ package simulator
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/iot-go-sdk/pkg/framework/core"
+	"znb/iot-uplink-gen/llm"
 	"znb/iot-uplink-gen/tsl"
 )
 
@@ -194,13 +196,21 @@ func (sd *SimulatedDevice) OnPropertySet(property core.Property) error {
 func (sd *SimulatedDevice) OnServiceInvoke(service core.ServiceRequest) (core.ServiceResponse, error) {
 	sd.log(fmt.Sprintf("[%s] 接收到服务调用: %s, 参数: %v", sd.DeviceInfo.DeviceName, service.Service, service.Params))
 
-	// 服务已经通过RegisterService注册了处理器
-	return core.ServiceResponse{
-		ID:        service.ID,
-		Code:      200,
-		Message:   "服务由注册的处理器处理",
-		Timestamp: time.Now(),
-	}, nil
+	// 处理特殊的系统服务
+	switch service.Service {
+	case "update_tsl":
+		return sd.handleUpdateTSL(service)
+	case "generate_rule":
+		return sd.handleGenerateRule(service)
+	default:
+		// 服务已经通过RegisterService注册了处理器
+		return core.ServiceResponse{
+			ID:        service.ID,
+			Code:      200,
+			Message:   "服务由注册的处理器处理",
+			Timestamp: time.Now(),
+		}, nil
+	}
 }
 
 // OnPropertyGet 处理属性获取
@@ -424,4 +434,103 @@ func (sd *SimulatedDevice) log(msg string) {
 	if sd.logCallback != nil {
 		sd.logCallback(msg)
 	}
+}
+
+// handleUpdateTSL 处理TSL更新服务
+func (sd *SimulatedDevice) handleUpdateTSL(service core.ServiceRequest) (core.ServiceResponse, error) {
+	sd.log(fmt.Sprintf("[%s] 处理TSL更新请求", sd.DeviceInfo.DeviceName))
+
+	// 从参数中获取TSL内容
+	tslContent, ok := service.Params["tsl_content"].(string)
+	if !ok {
+		return core.ServiceResponse{
+			ID:        service.ID,
+			Code:      400,
+			Message:   "参数错误: 缺少tsl_content参数",
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	// 使用统一的TSL处理流程
+	result, err := llm.ProcessTSLContent(tslContent)
+	if err != nil {
+		return core.ServiceResponse{
+			ID:        service.ID,
+			Code:      500,
+			Message:   fmt.Sprintf("处理TSL失败: %v", err),
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	sd.log(fmt.Sprintf("[%s] TSL处理完成: 产品=%s, TSL文件=%s, Rule文件=%s", 
+		sd.DeviceInfo.DeviceName, result.ProductName, result.TSLFile, result.RuleFile))
+
+	return core.ServiceResponse{
+		ID:        service.ID,
+		Code:      200,
+		Message:   "TSL更新成功",
+		Data: map[string]interface{}{
+			"product_name": result.ProductName,
+			"tsl_file":     result.TSLFile,
+			"rule_file":    result.RuleFile,
+		},
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// handleGenerateRule 处理Rule生成服务
+func (sd *SimulatedDevice) handleGenerateRule(service core.ServiceRequest) (core.ServiceResponse, error) {
+	sd.log(fmt.Sprintf("[%s] 处理Rule生成请求", sd.DeviceInfo.DeviceName))
+
+	// 从参数中获取TSL内容或文件路径
+	var tslContent string
+	if content, ok := service.Params["tsl_content"].(string); ok {
+		tslContent = content
+	} else if filePath, ok := service.Params["tsl_file"].(string); ok {
+		// 从文件读取TSL内容
+		data, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			return core.ServiceResponse{
+				ID:        service.ID,
+				Code:      400,
+				Message:   fmt.Sprintf("读取TSL文件失败: %v", err),
+				Timestamp: time.Now(),
+			}, nil
+		}
+		tslContent = string(data)
+	} else {
+		return core.ServiceResponse{
+			ID:        service.ID,
+			Code:      400,
+			Message:   "参数错误: 需要tsl_content或tsl_file参数",
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	// 使用统一的TSL处理流程
+	result, err := llm.ProcessTSLContent(tslContent)
+	if err != nil {
+		return core.ServiceResponse{
+			ID:        service.ID,
+			Code:      500,
+			Message:   fmt.Sprintf("处理TSL失败: %v", err),
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	sd.log(fmt.Sprintf("[%s] Rule生成完成: 产品=%s, TSL文件=%s, Rule文件=%s", 
+		sd.DeviceInfo.DeviceName, result.ProductName, result.TSLFile, result.RuleFile))
+
+	return core.ServiceResponse{
+		ID:        service.ID,
+		Code:      200,
+		Message:   "Rule生成成功",
+		Data: map[string]interface{}{
+			"product_name": result.ProductName,
+			"tsl_file":     result.TSLFile,
+			"rule_file":    result.RuleFile,
+			"rule_content": result.RuleContent,
+		},
+		Timestamp: time.Now(),
+	}, nil
 }

@@ -24,18 +24,32 @@ type Property struct {
 	AccessMode string   `json:"accessMode"`
 	Required   bool     `json:"required"`
 	DataType   DataType `json:"dataType"`
+	DataType2  DataType `json:"data_type"` // 支持下划线格式
+	Desc       string   `json:"desc"`      // 添加描述字段
+}
+
+// GetDataType 获取属性的数据类型，支持两种字段格式
+func (p *Property) GetDataType() DataType {
+	// 如果DataType2有值，优先使用data_type字段
+	if p.DataType2.Type != "" {
+		return p.DataType2
+	}
+	// 否则使用dataType字段
+	return p.DataType
 }
 
 // Event 定义事件结构
 type Event struct {
-	Identifier string       `json:"identifier"`
-	Name       string       `json:"name"`
-	Type       string       `json:"type"`
-	Required   bool         `json:"required"`
-	Desc       string       `json:"desc"`
-	Method     string       `json:"method"`
-	OutputData []EventParam `json:"outputData"`
-	EventType  string       `json:"eventType"`
+	Identifier  string       `json:"identifier"`
+	Name        string       `json:"name"`
+	Type        string       `json:"type"`
+	Required    bool         `json:"required"`
+	Desc        string       `json:"desc"`
+	Method      string       `json:"method"`
+	OutputData  []EventParam `json:"outputData"`
+	OutputData2 []EventParam `json:"output_data"` // 支持下划线格式
+	EventType   string       `json:"eventType"`
+	EventType2  string       `json:"event_type"` // 支持下划线格式
 }
 
 // EventParam 定义事件参数结构
@@ -43,18 +57,62 @@ type EventParam struct {
 	Identifier string   `json:"identifier"`
 	Name       string   `json:"name"`
 	DataType   DataType `json:"dataType"`
+	DataType2  DataType `json:"data_type"` // 支持下划线格式
+	Desc       string   `json:"desc"`      // 添加描述字段
+}
+
+// GetDataType 获取事件参数的数据类型，支持两种字段格式
+func (ep *EventParam) GetDataType() DataType {
+	if ep.DataType2.Type != "" {
+		return ep.DataType2
+	}
+	return ep.DataType
+}
+
+// GetOutputData 获取事件的输出数据，支持两种字段格式
+func (e *Event) GetOutputData() []EventParam {
+	if len(e.OutputData2) > 0 {
+		return e.OutputData2
+	}
+	return e.OutputData
+}
+
+// GetEventType 获取事件类型，支持两种字段格式
+func (e *Event) GetEventType() string {
+	if e.EventType2 != "" {
+		return e.EventType2
+	}
+	return e.EventType
 }
 
 // Action 定义服务结构
 type Action struct {
-	Identifier string        `json:"identifier"`
-	Name       string        `json:"name"`
-	Required   bool          `json:"required"`
-	CallType   string        `json:"callType"`
-	Desc       string        `json:"desc"`
-	Method     string        `json:"method"`
-	InputData  []ActionParam `json:"inputData"`
-	OutputData []ActionParam `json:"outputData"`
+	Identifier  string        `json:"identifier"`
+	Name        string        `json:"name"`
+	Required    bool          `json:"required"`
+	CallType    string        `json:"callType"`
+	Desc        string        `json:"desc"`
+	Method      string        `json:"method"`
+	InputData   []ActionParam `json:"inputData"`
+	InputData2  []ActionParam `json:"input_data"`  // 支持下划线格式
+	OutputData  []ActionParam `json:"outputData"`
+	OutputData2 []ActionParam `json:"output_data"` // 支持下划线格式
+}
+
+// GetInputData 获取动作的输入数据，支持两种字段格式
+func (a *Action) GetInputData() []ActionParam {
+	if len(a.InputData2) > 0 {
+		return a.InputData2
+	}
+	return a.InputData
+}
+
+// GetOutputData 获取动作的输出数据，支持两种字段格式
+func (a *Action) GetOutputData() []ActionParam {
+	if len(a.OutputData2) > 0 {
+		return a.OutputData2
+	}
+	return a.OutputData
 }
 
 // ActionParam 定义服务参数结构
@@ -62,6 +120,16 @@ type ActionParam struct {
 	Identifier string   `json:"identifier"`
 	Name       string   `json:"name"`
 	DataType   DataType `json:"dataType"`
+	DataType2  DataType `json:"data_type"` // 支持下划线格式
+	Desc       string   `json:"desc"`      // 添加描述字段
+}
+
+// GetDataType 获取动作参数的数据类型，支持两种字段格式
+func (ap *ActionParam) GetDataType() DataType {
+	if ap.DataType2.Type != "" {
+		return ap.DataType2
+	}
+	return ap.DataType
 }
 
 // DataType 定义数据类型结构
@@ -167,7 +235,7 @@ func (m *TSLManager) ValidateTSL(model *TSLModel) error {
 		if prop.Name == "" {
 			return fmt.Errorf("属性名称不能为空")
 		}
-		if err := m.validateDataType(prop.DataType); err != nil {
+		if err := m.validateDataType(prop.GetDataType()); err != nil {
 			return fmt.Errorf("属性[%s]数据类型无效: %v", prop.Identifier, err)
 		}
 	}
@@ -208,7 +276,7 @@ func (m *TSLManager) validateDataType(dt DataType) error {
 	}
 	
 	if !valid {
-		return fmt.Errorf("不支持的数据类型: %s", dt.Type)
+		return fmt.Errorf("不支持的数据类型: '%s' (长度:%d)", dt.Type, len(dt.Type))
 	}
 
 	// 对于数值类型，验证范围
