@@ -50,6 +50,9 @@ logs/
 # config/production.json
 # config/local.json
 
+# Configs directory JSON files
+configs/*.json
+
 # Project specific executables
 iot-simulator
 mydevice
