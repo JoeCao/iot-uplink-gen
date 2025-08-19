@@ -73,3 +73,6 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Sensitive configuration files
+configs/llm.yaml
