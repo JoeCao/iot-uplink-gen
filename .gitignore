@@ -66,7 +66,7 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage/
-
+configs/backup
 # Environment variables
 .env
 .env.local

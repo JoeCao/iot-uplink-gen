@@ -1,0 +1,8 @@
+{
+  "name": "智能空调模板",
+  "product_type": "智能空调",
+  "description": "智能空调设备模板，支持温度控制、湿度监测和工作模式切换",
+  "tsl_file": "tsl.json",
+  "rule_file": "rule.json",
+  "config_file": "config.json"
+}

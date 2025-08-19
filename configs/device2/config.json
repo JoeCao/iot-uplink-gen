@@ -1,0 +1,38 @@
+{
+  "Device": {
+    "ProductKey": "YEclvKPu",
+    "DeviceName": "v4qfzMMLwj",
+    "DeviceSecret": "mWbEKn6WnL44sfgn",
+    "Region": "cn-shanghai"
+  },
+  "MQTT": {
+    "Host": "121.40.253.229",
+    "Port": 1883,
+    "UseTLS": false,
+    "KeepAlive": 60,
+    "CleanSession": true,
+    "AutoReconnect": true,
+    "ReconnectMax": 10,
+    "Timeout": 30000000000
+  },
+  "Features": {
+    "EnableOTA": true,
+    "EnableShadow": false,
+    "EnableRules": false,
+    "EnableMetrics": true
+  },
+  "Logging": {
+    "Level": "info",
+    "Format": "text",
+    "Output": "stdout",
+    "MaxSize": 100,
+    "MaxBackups": 3,
+    "MaxAge": 30
+  },
+  "Advanced": {
+    "WorkerCount": 10,
+    "EventBufferSize": 1000,
+    "RequestTimeout": 30000000000,
+    "PropertyCacheTTL": 300000000000
+  }
+}

@@ -65,7 +65,14 @@ func NewRuleManager(baseDir string) *RuleManager {
 
 // LoadRule 从文件加载规则
 func (m *RuleManager) LoadRule(filename string) (*SimulationRule, error) {
-	filePath := filepath.Join(m.baseDir, "configs", filename)
+	var filePath string
+	if filepath.IsAbs(filename) {
+		// 如果是绝对路径，直接使用
+		filePath = filename
+	} else {
+		// 如果是相对路径，添加baseDir和configs前缀
+		filePath = filepath.Join(m.baseDir, "configs", filename)
+	}
 	
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {

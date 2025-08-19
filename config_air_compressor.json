@@ -1,0 +1,40 @@
+{
+  "Device": {
+    "ProductKey": "HgCrxVLa",
+    "DeviceName": "mQYEXidX89",
+    "DeviceSecret": "7UUDqz6SZ1EJLlwO",
+    "Region": "cn-shanghai"
+  },
+  "MQTT": {
+    "Host": "test.mosquitto.org",
+    "Port": 1883,
+    "Username": "",
+    "Password": "",
+    "UseTLS": false,
+    "KeepAlive": 60,
+    "CleanSession": true,
+    "AutoReconnect": true,
+    "ReconnectMax": 10,
+    "Timeout": 30000000000
+  },
+  "Features": {
+    "EnableOTA": true,
+    "EnableShadow": false,
+    "EnableRules": false,
+    "EnableMetrics": true
+  },
+  "Logging": {
+    "Level": "info",
+    "Format": "text",
+    "Output": "stdout",
+    "MaxSize": 100,
+    "MaxBackups": 3,
+    "MaxAge": 30
+  },
+  "Advanced": {
+    "WorkerCount": 10,
+    "EventBufferSize": 1000,
+    "RequestTimeout": 30000000000,
+    "PropertyCacheTTL": 300000000000
+  }
+}

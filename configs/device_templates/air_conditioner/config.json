@@ -1,0 +1,30 @@
+{
+  "device": {
+    "product_key": "YEclvKPu",
+    "device_name": "v4qfzMMLwj",
+    "device_secret": "mWbEKn6WnL44sfgn",
+    "region": "cn-shanghai"
+  },
+  "mqtt": {
+    "host": "121.40.253.229",
+    "port": 1883,
+    "use_tls": false,
+    "keep_alive": 60,
+    "clean_session": true,
+    "auto_reconnect": true
+  },
+  "features": {
+    "enable_ota": true,
+    "enable_shadow": false,
+    "enable_rules": false,
+    "enable_metrics": true
+  },
+  "logging": {
+    "level": "info"
+  },
+  "simulation": {
+    "upload_interval": 45,
+    "enable_events": true,
+    "enable_services": true
+  }
+}

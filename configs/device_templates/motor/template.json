@@ -1,0 +1,8 @@
+{
+  "name": "智能调速电机模板",
+  "product_type": "电机",
+  "description": "工业智能调速电机设备模板，支持转速控制、温度监控和故障诊断",
+  "tsl_file": "tsl.json",
+  "rule_file": "rule.json",
+  "config_file": "config.json"
+}

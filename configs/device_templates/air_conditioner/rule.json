@@ -1,0 +1,109 @@
+{
+  "productName": "智能空调",
+  "simulationConfig": {
+    "current_temperature": {
+      "method": "wave",
+      "min": 18,
+      "max": 28,
+      "amplitude": 3,
+      "wavePeriod": 600
+    },
+    "target_temperature": {
+      "method": "randomRange",
+      "min": 20,
+      "max": 26,
+      "step": 1
+    },
+    "humidity": {
+      "method": "wave",
+      "min": 40,
+      "max": 70,
+      "amplitude": 5,
+      "wavePeriod": 900
+    },
+    "fan_speed": {
+      "method": "enumPick",
+      "enumValues": ["1", "2", "3", "4", "5"],
+      "switchProbability": 0.2
+    },
+    "power_status": {
+      "method": "enumPick", 
+      "enumValues": ["true", "false"],
+      "switchProbability": 0.1
+    },
+    "mode": {
+      "method": "enumPick",
+      "enumValues": ["制冷", "制热", "送风", "除湿", "自动"],
+      "switchProbability": 0.15
+    },
+    "filter_status": {
+      "method": "enumPick",
+      "enumValues": ["true", "false"],
+      "switchProbability": 0.05
+    },
+    "energy_consumption": {
+      "method": "accumulate",
+      "start": 0,
+      "step": 0.5
+    },
+    "compressor_status": {
+      "method": "enumPick",
+      "enumValues": ["true", "false"],
+      "switchProbability": 0.3
+    },
+    "remote_control": {
+      "method": "enumPick",
+      "enumValues": ["true"],
+      "switchProbability": 0
+    }
+  },
+  "events": [
+    {
+      "identifier": "overheat_alarm",
+      "triggerCondition": "current_temperature >= 35",
+      "cooldown": 300
+    }
+  ],
+  "services": {
+    "set_temperature": {
+      "responseStrategy": "fixed",
+      "possibleResponses": [
+        {
+          "code": 200,
+          "msg": "温度设定成功",
+          "desc": "空调温度设定成功"
+        },
+        {
+          "code": 500,
+          "msg": "温度设定失败",
+          "desc": "空调温度设定失败"
+        }
+      ]
+    },
+    "toggle_power": {
+      "responseStrategy": "fixed",
+      "possibleResponses": [
+        {
+          "code": 200,
+          "msg": "电源切换成功",
+          "desc": "空调电源状态切换成功"
+        }
+      ]
+    },
+    "change_mode": {
+      "responseStrategy": "fixed",
+      "possibleResponses": [
+        {
+          "code": 200,
+          "msg": "模式切换成功",
+          "desc": "空调工作模式切换成功"
+        },
+        {
+          "code": 500,
+          "msg": "模式切换失败",
+          "desc": "空调工作模式切换失败"
+        }
+      ]
+    }
+  }
+}

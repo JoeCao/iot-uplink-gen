@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -167,7 +168,16 @@ func NewTSLManager(baseDir string) *TSLManager {
 
 // LoadTSL 从文件加载TSL
 func (m *TSLManager) LoadTSL(filename string) (*TSLModel, error) {
-	filePath := filepath.Join(m.baseDir, "configs", filename)
+	var filePath string
+	if filepath.IsAbs(filename) {
+		// 如果是绝对路径，直接使用
+		filePath = filename
+		log.Printf("TSL加载使用绝对路径: %s", filePath)
+	} else {
+		// 如果是相对路径，添加baseDir和configs前缀
+		filePath = filepath.Join(m.baseDir, "configs", filename)
+		log.Printf("TSL加载使用相对路径: %s -> %s", filename, filePath)
+	}
 	
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
