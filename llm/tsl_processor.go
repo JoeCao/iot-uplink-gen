@@ -27,8 +27,12 @@ func ProcessTSLContent(tslContent string) (*TSLProcessResult, error) {
 	tslFilePath := filepath.Join("configs", tslFileName)
 	ruleFilePath := filepath.Join("configs", ruleFileName)
 
-	// 保存TSL文件
-	if err := ioutil.WriteFile(tslFilePath, []byte(tslContent), 0644); err != nil {
+	// 修复TSL内容中的数据类型问题
+	fixedTSLContent := strings.ReplaceAll(tslContent, `"type":"int64"`, `"type":"int"`)
+	fixedTSLContent = strings.ReplaceAll(fixedTSLContent, `"type":"int32"`, `"type":"int"`)
+	
+	// 保存修复后的TSL文件
+	if err := ioutil.WriteFile(tslFilePath, []byte(fixedTSLContent), 0644); err != nil {
 		return nil, fmt.Errorf("保存TSL文件失败: %v", err)
 	}
 
@@ -47,7 +51,7 @@ func ProcessTSLContent(tslContent string) (*TSLProcessResult, error) {
 		ProductName:   productName,
 		TSLFile:       tslFilePath,
 		RuleFile:      ruleFilePath,
-		TSLContent:    tslContent,
+		TSLContent:    fixedTSLContent,
 		RuleContent:   ruleContent,
 	}, nil
 }

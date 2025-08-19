@@ -21,10 +21,11 @@ func main() {
 	productType := flag.String("product", "", "产品类型（TSL模拟器模式必需）")
 	tslFile := flag.String("tsl", "", "TSL文件路径（可选）")
 	ruleFile := flag.String("rule", "", "规则文件路径（可选）")
+	configFile := flag.String("config", "config.json", "配置文件路径")
 	flag.Parse()
 
 	// 加载应用配置
-	appCfg, err := appConfig.LoadConfig()
+	appCfg, err := appConfig.LoadConfigFromFile(*configFile)
 	if err != nil {
 		log.Fatal("Failed to load config:", err)
 	}

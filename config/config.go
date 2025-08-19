@@ -11,6 +11,11 @@ import (
 
 // LoadConfig loads the framework configuration
 func LoadConfig() (core.Config, error) {
+	return LoadConfigFromFile("config.json")
+}
+
+// LoadConfigFromFile loads configuration from specified file
+func LoadConfigFromFile(filename string) (core.Config, error) {
 	// 默认配置
 	config := core.Config{
 		Device: core.DeviceConfig{
@@ -52,7 +57,7 @@ func LoadConfig() (core.Config, error) {
 	}
 
 	// 尝试从文件加载配置覆盖
-	if data, err := ioutil.ReadFile("config.json"); err == nil {
+	if data, err := ioutil.ReadFile(filename); err == nil {
 		if err := json.Unmarshal(data, &config); err != nil {
 			return config, err
 		}
