@@ -22,6 +22,7 @@ import (
 	"znb/iot-uplink-gen/manager"
 	"znb/iot-uplink-gen/process"
 	"znb/iot-uplink-gen/simulator"
+	"znb/iot-uplink-gen/web"
 )
 
 func main() {
@@ -479,6 +480,29 @@ func runSimpleMode(devicePath string, webEnabled bool) error {
 
 	log.Printf("所有设备进程启动成功: %d 个进程", len(processes))
 
+	// 启动Web管理界面（如果启用）
+	var webManager *web.WebManager
+	if webEnabled {
+		log.Println("启动Web管理界面...")
+		webConfig := &web.Config{
+			Port:      8080,
+			Host:      "0.0.0.0",
+			Debug:     false,
+			StaticDir: "web/static",
+		}
+		
+		webManager = web.NewWebManager(webConfig)
+		
+		// 在单独的goroutine中启动Web服务器
+		go func() {
+			if err := webManager.Start(); err != nil {
+				log.Printf("Web服务器启动失败: %v", err)
+			}
+		}()
+		
+		log.Println("Web管理界面已启动，访问地址: http://0.0.0.0:8080")
+	}
+
 	// 等待关闭信号
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
@@ -486,6 +510,14 @@ func runSimpleMode(devicePath string, webEnabled bool) error {
 	// 等待停止信号
 	<-sigCh
 	log.Println("接收到停止信号，正在关闭所有设备进程...")
+
+	// 停止Web服务器
+	if webManager != nil {
+		log.Println("停止Web管理界面...")
+		if err := webManager.Stop(); err != nil {
+			log.Printf("停止Web服务器失败: %v", err)
+		}
+	}
 
 	// 停止所有进程
 	for deviceDir, cmd := range processes {
